@@ -56,7 +56,7 @@ name = 'dhk.csv2xlsx'
 # Sets setup.py `version` variable.
 # https://packaging.python.org/guides/distributing-packages-using-setuptools/#choosing-a-versioning-scheme
 # https://www.python.org/dev/peps/pep-0440/
-version = '1.0.0.dev'
+version = '1.0.0'
 
 ##############################################################################
 # Functions.
