@@ -44,6 +44,7 @@ def parse_bool(
         'false',
         'f',
         'no',
+        'n',
         'off',
         '0'
     ):
