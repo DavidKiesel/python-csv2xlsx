@@ -56,7 +56,7 @@ name = 'dhk.csv2xlsx'
 # Sets setup.py `version` variable.
 # https://packaging.python.org/guides/distributing-packages-using-setuptools/#choosing-a-versioning-scheme
 # https://www.python.org/dev/peps/pep-0440/
-version = '1.0.0'
+version = '1.0.1'
 
 ##############################################################################
 # Functions.
@@ -78,16 +78,15 @@ def initialize(project):
             'publish',
         )
 
-    # Sets setup.py variable description.
+    # Sets `setup.py` variable `description`.
     project.summary = \
-        'Read a CSV file and write an XLSX file with optional formatting.' 
+        'Read a CSV file and write an XLSX file with optional formatting.'
 
-    # Sets setup.py variable long_description.
-    project.description = """
-    Read a CSV file and write an XLSX file with optional formatting.
-    """
+    # Sets `setup.py` variable `long_description`.
+    # Not needed because using README file through distutils plugin.
+    # project.description = ''
 
-    # Sets setup.py variable author and author_email.
+    # Sets `setup.py` variables `author` and `author_email`.
     project.authors = \
         (
             Author(
@@ -96,7 +95,7 @@ def initialize(project):
             ),
         )
 
-    # Sets setup.py variable maintainer and maintainer_email.
+    # Sets `setup.py` variables `maintainer` and `maintainer_email`.
     project.maintainers = \
         (
             Author(
@@ -105,26 +104,26 @@ def initialize(project):
             ),
         )
 
-    # Sets setup.py variable license.
+    # Sets `setup.py` variable `license`.
     # See:
     # * https://choosealicense.com/
     # * https://spdx.org/licenses/
     project.license = 'MIT'
 
-    # Sets setup.py variable url.
+    # Sets `setup.py` variable `url`.
     project.url = 'https://github.com/DavidKiesel/python-csv2xlsx'
 
-    # Sets setup.py variable project_urls.
+    # Sets `setup.py` variable `project_urls`.
     project.urls = \
         {
             'Homepage': 'https://github.com/DavidKiesel/python-csv2xlsx',
         }
 
-    # Sets setup.py variable python_requires.
+    # Sets `setup.py` variable `python_requires`.
     project.requires_python = '>=3.8'
 
 @init
-def set_properties(
+def set_properties_001(
     project
 ):
     ##########################################################################
@@ -187,7 +186,6 @@ def set_properties(
             'Development Status :: 3 - Alpha',
             'Environment :: Console',
             'Intended Audience :: Developers',
-            'License :: OSI Approved :: MIT License',
             'Programming Language :: Python',
             'Programming Language :: Python :: 3',
             'Programming Language :: Python :: 3.8',
@@ -199,10 +197,42 @@ def set_properties(
         )
     )
 
+    # If `distutils_readme_description` and `distutils_description_overwrite`
+    # are both True, then contents of the README file (e.g., `README.md`) will
+    # be used to set the PyPI page's `Project description` instead of the value
+    # of the project attribute `description`.
+    #
+    # Note that the README file can be set by project property
+    # `distutils_readme_file` but defaults to `README.md`.
+    project.set_property(
+        'distutils_readme_description',
+        True
+    )
+
+    project.set_property(
+        'distutils_description_overwrite',
+        True
+    )
+
     # Sets twine option --repository argument.
-    # To upload to pypi, this setting can be overridden with pyb argument
-    # `-P 'distutils_upload_repository_key=pypi'`.
     project.set_property(
         'distutils_upload_repository_key',
         'testpypi'
+    )
+
+@init(
+    environments='pypi'
+)
+def set_properties_002(
+    project
+):
+    ##########################################################################
+    # distutils plugin properties
+    #
+    # https://pybuilder.io/documentation/plugins
+
+    # Sets twine option --repository argument.
+    project.set_property(
+        'distutils_upload_repository_key',
+        'pypi'
     )

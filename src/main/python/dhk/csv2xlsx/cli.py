@@ -25,7 +25,7 @@ def get_parser() -> argparse.ArgumentParser:
         argparse.ArgumentParser(
             prog='csv2xlsx',
             formatter_class=argparse.RawDescriptionHelpFormatter,
-            description='Convert CSV file to an XLSX file.',
+            description='Read a CSV file and write an XLSX file.',
             add_help=True,
             epilog="""
 Examples:
