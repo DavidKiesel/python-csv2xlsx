@@ -56,7 +56,7 @@ name = 'dhk.csv2xlsx'
 # Sets setup.py `version` variable.
 # https://packaging.python.org/guides/distributing-packages-using-setuptools/#choosing-a-versioning-scheme
 # https://www.python.org/dev/peps/pep-0440/
-version = '1.0.1'
+version = '2.0.0'
 
 ##############################################################################
 # Functions.
@@ -120,7 +120,7 @@ def initialize(project):
         }
 
     # Sets `setup.py` variable `python_requires`.
-    project.requires_python = '>=3.8'
+    project.requires_python = '>=3.9'
 
 @init
 def set_properties_001(
@@ -188,7 +188,6 @@ def set_properties_001(
             'Intended Audience :: Developers',
             'Programming Language :: Python',
             'Programming Language :: Python :: 3',
-            'Programming Language :: Python :: 3.8',
             'Programming Language :: Python :: 3.9',
             'Programming Language :: Python :: 3.10',
             'Programming Language :: Python :: 3.11',

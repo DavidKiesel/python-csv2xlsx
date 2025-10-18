@@ -183,13 +183,11 @@ def apply_workbook_format(
             workbook
         )
 
-    for setting in list(workbook_format):
-        value = workbook_format.get(setting)
-
-        format_setter = format_setters.get(setting)
+    for setting_name, setting_value in workbook_format.items():
+        format_setter = format_setters.get(setting_name)
 
         if format_setter is not None:
-            format_setter(value)
+            format_setter(setting_value)
 
 
 def transform(
@@ -203,17 +201,14 @@ def transform(
         workbook_settings = {}
 
     workbook_options = \
-        workbook_settings.get(
-            'workbook_options',
-            {}
-        )
-
-    workbook_options['constant_memory'] = True
-
-    workbook_format = \
-        workbook_settings.get(
-            'workbook_format',
-            {}
+        (
+            {
+                'constant_memory': True
+            }
+            | workbook_settings.get(
+                'workbook_options',
+                {}
+            )
         )
 
     worksheet_settings = \
@@ -222,9 +217,9 @@ def transform(
             {}
         )
 
-    cell_format_settings_default = \
+    workbook_format = \
         workbook_settings.get(
-            'cell_format_settings_default',
+            'workbook_format',
             {}
         )
 
@@ -257,15 +252,11 @@ def transform(
 
         cell_formats = {}
 
-        if 'default' not in cell_format_settings:
-            cell_format_settings['default'] = {}
-
-        for cell_format_name in cell_format_settings:
+        for cell_format_name, cell_format in cell_format_settings.items():
             cell_formats[cell_format_name] = \
                 workbook.add_format(
                     workbook_format
-                    | cell_format_settings_default
-                    | cell_format_settings[cell_format_name]
+                    | cell_format
                 )
 
         worksheet = \
@@ -293,9 +284,9 @@ def transform(
                 ),
                 cell_format=cell_formats.get(
                     column_setting.get(
-                        'cell_format',
-                        'default'
-                    )
+                        'cell_format'
+                    ),
+                    workbook.formats[0]
                 ),
                 options=column_setting.get('options')
             )
@@ -325,9 +316,9 @@ def transform(
                     row,
                     cell_format=cell_formats.get(
                         row_setting.get(
-                            'cell_format',
-                            'default'
-                        )
+                            'cell_format'
+                        ),
+                        workbook.formats[0]
                     )
                 )
 

@@ -28,25 +28,40 @@ pip install dhk.csv2xlsx
 
 ```console
 $ csv2xlsx --help
-usage: csv2xlsx [-h] [--settings-file SETTINGS_FILE] [--verbose] [--force]
-                [--output OUTPUT_FILE]
-                CSV_FILE
+usage: csv2xlsx [-h] [--force] [--output OUTPUT_FILE]
+                [--settings-file SETTINGS_FILE] [--verbose]
+                [--generate-settings-file | --transform-csv]
+                [CSV_FILE]
 
 Read a CSV file and write an XLSX file.
+
+The program exposes much of the formatting functionality of the XlsxWriter
+packages Workbook class through the optional SETTINGS_FILE.  For details about
+the Workbook class, see https://xlsxwriter.readthedocs.io/workbook.html.  For
+details about the Worksheet class, see
+https://xlsxwriter.readthedocs.io/worksheet.html.  For details about the Format
+class, see https://xlsxwriter.readthedocs.io/format.html.
 
 positional arguments:
   CSV_FILE              CSV file
 
 options:
   -h, --help            show this help message and exit
-  --settings-file, -s SETTINGS_FILE
-                        settings file; default: None
-  --verbose, -v         verbose
   --force, -f           force; suppress prompts
   --output, -o OUTPUT_FILE
                         output file; default: CSV_FILE - .csv + .xlsx
+  --settings-file, -s SETTINGS_FILE
+                        settings file
+  --verbose, -v         verbose
+  --generate-settings-file, -g
+                        generate settings file; file defaults to
+                        sample.settings.json
+  --transform-csv, -t   transform CSV to XLSX; default True
 
-Examples:
+examples:
+
+    csv2xlsx \
+        --generate-settings-file
 
     csv2xlsx \
         CSV_FILE
@@ -59,6 +74,84 @@ Examples:
         --settings-file SETTINGS_FILE \
         --output OUTPUT \
         CSV_FILE
+
+execution details:
+
+The Workbook class instance attribute `options` is set to `{'constant_memory':
+True}` merged with the SETTINGS_FILE `workbook_options` dictionary.
+
+The Workbook class instance attribute `formats[0]` stores a default Format
+object.  The SETTINGS_FILE `workbook_format` dictionary can be used to set the
+attributes of this default Format object.  The available dictionary keywords
+correspond to the list of properties in the table at
+https://xlsxwriter.readthedocs.io/format.html#format-methods-and-format-properties.
+
+The Workbook class instance method `add_format()` is used to add Format class
+instances to the Workbook class instance.  The program iterates over each of
+the SETTINGS_FILE `cell_format_settings` dictionary key-value pairs.  The
+SETTINGS_FILE `workbook_format` dictionary is merged with the value of the
+`cell_format_settings` key-value pair, and this merged value is the argument to
+`add_format()`.  The key-value pair formed by the key from the
+`cell_format_settings` key-value pair and the `add_format()` return value is
+stored in a `cell_formats` dictionary for later use when setting Worksheet
+class instance columns and rows.
+
+The Worksheet class instance method `set_column()` is used to set the width,
+cell format, and options for specified columns.  The program iterates over each
+of the SETTINGS_FILE `column_settings` list elements.  For each element, the
+`first_col` and `last_col` arguments to `set_column()` can be specified in
+absolute terms via a `columns` key-value pair with the string value specified
+by ordinal number (`'1'`, `'1:2'`, etc.) or by `A1` style notation (`'A'`,
+`'A:B'`).  Alternatively, if the `columns` key-value pair is not present, then
+`first_col` is simply the next column, and `last_col` is either the same as
+`first_col` or is set based on a `span` key-value pair.  The `width` argument
+to `set_column()` is set to the value of the `width` key-value pair, defaulting
+to 10 if not specified.  The `cell_format` argument to `set_column()` is set
+based on the value of the `cell_format` key-value pair.  This value must
+correspond to the key of one of the SETTINGS_FILE `cell_format_settings`
+key-value pairs.  If a `cell_format` key-value pair is not provided, then the
+argument defaults to the Workbook class instance attribute `formats[0]`.  The
+`options` argument to `set_column()` is set to the value of the `options`
+key-pair.  The value of the `data_type` key-pair is stored for each column for
+later use when parsing CSV data.
+
+The Worksheet class instance method `set_row()` is used to set the cell format
+for specified rows.  The program iterates over each of the SETTINGS_FILE
+`row_settings` list elements.  For each element, `first_row` and `last_row` can
+be specified in absolute terms via a `rows` key-value pair with the string
+value specified by ordinal number (`'1'`, `'1:2'`, etc.).  Alternatively, if
+the `rows` key-value pair is not present, then `first_row` is simply the next
+column, and `last_row` is either the same as `first_row` or is set based on a
+`span` key-value pair.  For each `row` in the sequence determined by
+`first_row` and `last_row`, `set_row()` is called with `row` as the first
+positional argument and the argument `cell_format` set based on the value of
+the `cell_format` key-value pair.  This value must correspond to the key of one
+of the SETTINGS_FILE `cell_format_settings` key-value pairs.  If a
+`cell_format` key-value pair is not provided, then the argument defaults to
+the Workbook class instance attribute `formats[0]`.  The value of the
+`data_type` key-pair is stored for each row for later use when parsing CSV
+data.
+
+Each row of the CSV file is read.  The value of each column of the row is
+handled.  If there was a `data_type` specified in the SETTINGS_FILE for the
+row, then that is used.  Otherwise, an attempt is made to get a `data_type`
+that was specified in the SETTINGS_FILE for the column.  Valid values for
+`data_type` are: `decimal`, `bool`, `date`, `datetime`, `formula`, and
+`string`.  If `data_type` was not specified or an exception occurs when
+attempting to parse the CSV value in terms of the given `data_type`, then the
+CSV value is written as a `string`.
+
+The Worksheet class instance method `autofilter` is called with arguments based
+on the `autofilter` object in the SETTINGS_FILE `workbook_settings` dictionary.
+Both row-column notation (`(first_row, first_col, last_row, last_col)`) and
+`A1` style notation (`'A1:D11'`) are supported.  If row-column notation is
+used, then a negative number is replaced with the maximum row or column
+available in the data.
+
+The Worksheet class instance method `freeze_panes` is called with arguments
+based on the `freeze_panes` object in the SETTINGS_FILE `workbook_settings`
+dictionary.  Both row-column notation (`(row, col[, top_row, left_col])`) and
+`A1` style notation (`'A2'`) are supported.
 ```
 
 # Recommended Installation
