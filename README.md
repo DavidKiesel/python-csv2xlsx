@@ -60,16 +60,26 @@ options:
 
 examples:
 
+    # See application information.
+    csv2xlsx \
+        -v
+
+    # Generate a sample workbook settings file.
     csv2xlsx \
         --generate-settings-file
 
+    # Transform the given CSV file, writing a corresponding XLSX file.
     csv2xlsx \
         CSV_FILE
 
+    # Using the given workbook settings file, transform the given CSV file,
+    # writing a corresponding XLSX file.
     csv2xlsx \
         --settings-file SETTINGS_FILE \
         CSV_FILE
 
+    # Using the given workbook settings file, transform the given CSV file,
+    # writing the XLSX file to the given output file.
     csv2xlsx \
         --settings-file SETTINGS_FILE \
         --output OUTPUT \
@@ -152,6 +162,18 @@ The Worksheet class instance method `freeze_panes` is called with arguments
 based on the `freeze_panes` object in the SETTINGS_FILE `workbook_settings`
 dictionary.  Both row-column notation (`(row, col[, top_row, left_col])`) and
 `A1` style notation (`'A2'`) are supported.
+
+files:
+
+This application uses Python package `platformdirs` to determine under which
+directory configuration files are stored.  Method `PlatformDirs` is called with
+arguments `appname='csv2xlsx'` and `appauthor='dhk'`.  You can see the location
+of configuration files by executing the command `csv2xlsx -v`.
+
+default.settings.json
+    If no settings file argument is provided for a transformation and this
+    configuration file exists and is readable, then the application will
+    attempt to read default workbook settings from it.
 ```
 
 # Recommended Installation

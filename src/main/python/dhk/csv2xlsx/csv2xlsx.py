@@ -16,12 +16,15 @@ from datetime import (
     datetime,
 )
 from decimal import Decimal
+import logging
 from typing import Iterable
 
 # https://pypi.org/project/XlsxWriter/
 # https://xlsxwriter.readthedocs.io/
 # https://github.com/jmcnamara/XlsxWriter
 import xlsxwriter
+
+logger = logging.getLogger(__name__)
 
 
 def parse_bool(
@@ -333,6 +336,8 @@ def transform(
 
         max_column_offset = -1
 
+        row_offset = None
+
         for row_offset, row in enumerate(csv_reader):
             row_setting = row_settings_dict.get(row_offset)
 
@@ -429,7 +434,10 @@ def transform(
                 worksheet_settings.get('autofilter')
             )
 
-        if autofilter is not None:
+        if (
+            autofilter is not None and
+            row_offset is not None
+        ):
             if isinstance(autofilter, list):
                 if (
                     autofilter[2] > row_offset

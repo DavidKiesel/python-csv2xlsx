@@ -12,11 +12,15 @@
 import argparse
 import json
 import logging
+import os
 import os.path
 import sys
 
+from platformdirs import PlatformDirs
+
 from dhk.csv2xlsx import csv2xlsx
 
+logger = logging.getLogger(__name__)
 
 sample_settings = \
     '''{
@@ -118,6 +122,15 @@ sample_settings = \
 }'''
 
 
+# https://stackoverflow.com/questions/5574702/how-do-i-print-to-stderr-in-python
+def eprint(*args, **kwargs):
+    print(
+        *args,
+        file=sys.stderr,
+        **kwargs
+    )
+
+
 def get_parser() -> argparse.ArgumentParser:
     'Get parser.'
 
@@ -138,16 +151,26 @@ class, see https://xlsxwriter.readthedocs.io/format.html.
             epilog="""
 examples:
 
+    # See application information.
+    %(prog)s \\
+        -v
+
+    # Generate a sample workbook settings file.
     %(prog)s \\
         --generate-settings-file
 
+    # Transform the given CSV file, writing a corresponding XLSX file.
     %(prog)s \\
         CSV_FILE
 
+    # Using the given workbook settings file, transform the given CSV file,
+    # writing a corresponding XLSX file.
     %(prog)s \\
         --settings-file SETTINGS_FILE \\
         CSV_FILE
 
+    # Using the given workbook settings file, transform the given CSV file,
+    # writing the XLSX file to the given output file.
     %(prog)s \\
         --settings-file SETTINGS_FILE \\
         --output OUTPUT \\
@@ -230,6 +253,18 @@ The Worksheet class instance method `freeze_panes` is called with arguments
 based on the `freeze_panes` object in the SETTINGS_FILE `workbook_settings`
 dictionary.  Both row-column notation (`(row, col[, top_row, left_col])`) and
 `A1` style notation (`'A2'`) are supported.
+
+files:
+
+This application uses Python package `platformdirs` to determine under which
+directory configuration files are stored.  Method `PlatformDirs` is called with
+arguments `appname='csv2xlsx'` and `appauthor='dhk'`.  You can see the location
+of configuration files by executing the command `csv2xlsx -v`.
+
+default.settings.json
+    If no settings file argument is provided for a transformation and this
+    configuration file exists and is readable, then the application will
+    attempt to read default workbook settings from it.
 """
         )
 
@@ -323,12 +358,46 @@ def main(
         ]
     )
 
+    platform_dirs = \
+        PlatformDirs(
+            appname='csv2xlsx',
+            appauthor='dhk'
+        )
+
+    user_config_dir = \
+        platform_dirs.user_config_dir
+
+    default_settings_file = \
+        os.path.join(
+            user_config_dir,
+            'default.settings.json'
+        )
+
+    if logger.getEffectiveLevel() <= logging.INFO:
+        eprint(
+            'logger.getEffectiveLevel(): {}'.format(
+                logger.getEffectiveLevel()
+            )
+        )
+
+        eprint(
+            'user_config_dir: {}'.format(
+                user_config_dir
+            )
+        )
+
+        eprint(
+            'default_settings_file: {}'.format(
+                default_settings_file
+            )
+        )
+
     if args.generate_settings_file:
         for incompatible_option in (
             args.output_file,
         ):
             if incompatible_option is not None:
-                print(
+                eprint(
                     'Incompatible option.'
                 )
 
@@ -361,6 +430,13 @@ def main(
                 file=settings_fd
             )
     else:
+        if args.csv_fd is None:
+            eprint(
+                'Error.  No CSV file argument provided.'
+            )
+
+            sys.exit()
+
         if args.settings_file is not None:
             with open(
                 args.settings_file,
@@ -369,7 +445,25 @@ def main(
                 workbook_settings = \
                     json.load(settings_fd)
         else:
-            workbook_settings = {}
+            if (
+                os.path.isfile(default_settings_file) and
+                os.access(default_settings_file, os.R_OK)
+            ):
+                with open(
+                    default_settings_file,
+                    'r'
+                ) as settings_fd:
+                    workbook_settings = \
+                        json.load(settings_fd)
+
+                    if logger.getEffectiveLevel() <= logging.INFO:
+                        eprint(
+                            "Loaded default settings from file '{}'.".format(
+                                default_settings_file
+                            )
+                        )
+            else:
+                workbook_settings = {}
 
         workbook_path = args.output_file
 
