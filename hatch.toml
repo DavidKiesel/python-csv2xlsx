@@ -1,0 +1,31 @@
+[env]
+# Needed to generate requirements.txt files.
+requires = [
+    "hatch-pip-compile"
+]
+
+[envs.default]
+# Needed to generate requirements.txt files.
+type = "pip-compile"
+
+[envs.hatch-test]
+# Needed to generate requirements.txt files.
+type = "pip-compile"
+pip-compile-constraint = "default"
+
+[[envs.hatch-test.matrix]]
+python = [
+    "3.11",
+    "3.12",
+    "3.13",
+    "3.14",
+]
+
+[build.targets.wheel]
+# Needed for hatch to handle namespace package correctly.
+packages = [
+    "src/dhk"
+]
+
+[version]
+path = "src/dhk/csv2xlsx/__about__.py"

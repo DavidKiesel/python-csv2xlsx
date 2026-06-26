@@ -1,9 +1,7 @@
-#   -*- coding: utf-8 -*-
-
 ##############################################################################
 # copyrights and license
 #
-# Copyright (c) 2025 David Harris Kiesel
+# Copyright (c) 2026 David Harris Kiesel
 #
 # Licensed under the MIT License. See LICENSE in the project root for license
 # information.
@@ -23,6 +21,7 @@ from typing import Iterable
 # https://xlsxwriter.readthedocs.io/
 # https://github.com/jmcnamara/XlsxWriter
 import xlsxwriter
+import xlsxwriter.utility
 
 logger = logging.getLogger(__name__)
 
@@ -196,7 +195,7 @@ def apply_workbook_format(
 def transform(
     csv_iterable: Iterable[str],
     workbook_path: str,
-    workbook_settings: dict = None
+    workbook_settings: dict | None = None
 ) -> None:
     'Read a CSV iterable and write an XLSX file.'
 

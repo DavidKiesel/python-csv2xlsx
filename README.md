@@ -28,9 +28,8 @@ pip install dhk.csv2xlsx
 
 ```console
 $ csv2xlsx --help
-usage: csv2xlsx [-h] [--force] [--output OUTPUT_FILE]
-                [--settings-file SETTINGS_FILE] [--verbose]
-                [--generate-settings-file | --transform-csv]
+usage: csv2xlsx [-h] [--force] [--output OUTPUT_FILE] [--settings-file SETTINGS_FILE]
+                [--verbose] [--version] [--generate-settings-file | --transform-csv]
                 [CSV_FILE]
 
 Read a CSV file and write an XLSX file.
@@ -53,9 +52,9 @@ options:
   --settings-file, -s SETTINGS_FILE
                         settings file
   --verbose, -v         verbose
+  --version, -V         show version
   --generate-settings-file, -g
-                        generate settings file; file defaults to
-                        sample.settings.json
+                        generate settings file; file defaults to sample.settings.json
   --transform-csv, -t   transform CSV to XLSX; default True
 
 examples:
@@ -177,6 +176,35 @@ default.settings.json
 ```
 
 # Recommended Installation
+
+[`uv`](https://docs.astral.sh/uv/) is a tool for managing various aspects of the Python environment, including Python versions and Python virtual environments.
+
+## Install Package Using `uv`
+
+To install the package hosted at PyPI using `uv`, execute the command below.
+For command options, see https://docs.astral.sh/uv/reference/cli/#uv-tool-install.
+Note that there is a `--python PYTHON` option to select a particular Python version.
+Note that there is a `--overrides OVERRIDES` option to override dependency package versions specified in the `requirements.txt` file in the package and instead use the given `OVERRIDES` file.
+
+```bash
+uv \
+    tool \
+    install \
+    dhk.csv2xlsx
+```
+
+If an "invalid peer certificate: UnknownIssuer" error is thrown, one can force `uv` to use system certificates by setting environment variable `UV_SYSTEM_CERTS` to `true`.
+E.g.,
+
+```bash
+UV_SYSTEM_CERTS=true \
+uv \
+    tool \
+    install \
+    dhk.csv2xlsx
+```
+
+# Old Recommended Installation
 
 [`pyenv`](https://github.com/pyenv/pyenv) is a tool for installing multiple Python environments and controlling which one is in effect in the current shell.
 

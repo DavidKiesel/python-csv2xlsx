@@ -1,3 +1,39 @@
 [build-system]
-requires = ["pybuilder>=0.12.0"]
-build-backend = "pybuilder.pep517"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dhk.csv2xlsx"
+dynamic = ["version"]
+description = "Read a CSV file and write an XLSX file with optional formatting."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+keywords = []
+authors = [
+    { name = "David Harris Kiesel", email = "david.sw@suddenthought.net" }
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+    "platformdirs",
+    "XlsxWriter"
+]
+
+[project.scripts]
+csv2xlsx = "dhk.csv2xlsx.cli:main"
+
+[project.urls]
+Documentation = "https://github.com/DavidKiesel/python-csv2xlsx#readme"
+Issues = "https://github.com/DavidKiesel/python-csv2xlsx/issues"
+Source = "https://github.com/DavidKiesel/python-csv2xlsx"

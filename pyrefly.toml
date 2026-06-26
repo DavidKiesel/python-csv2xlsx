@@ -1,0 +1,10 @@
+# https://pyrefly.org/en/docs/configuration/
+
+# Don't want to bother type checking tests so override default of
+# ["**/*.py*"].
+project-includes = [
+    "src"
+]
+
+# Default is that only details about errors are displayed.
+min-severity = "warn"

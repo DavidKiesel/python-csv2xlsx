@@ -1,9 +1,7 @@
-#   -*- coding: utf-8 -*-
-
 ##############################################################################
 # copyrights and license
 #
-# Copyright (c) 2025 David Harris Kiesel
+# Copyright (c) 2026 David Harris Kiesel
 #
 # Licensed under the MIT License. See LICENSE in the project root for license
 # information.
@@ -18,6 +16,7 @@ import sys
 
 from platformdirs import PlatformDirs
 
+from dhk.csv2xlsx.__about__ import __version__
 from dhk.csv2xlsx import csv2xlsx
 
 logger = logging.getLogger(__name__)
@@ -123,7 +122,10 @@ sample_settings = \
 
 
 # https://stackoverflow.com/questions/5574702/how-do-i-print-to-stderr-in-python
-def eprint(*args, **kwargs):
+def eprint(
+    *args,
+    **kwargs
+):
     print(
         *args,
         file=sys.stderr,
@@ -132,7 +134,12 @@ def eprint(*args, **kwargs):
 
 
 def get_parser() -> argparse.ArgumentParser:
-    'Get parser.'
+    """
+    Get parser.
+
+    :return: ArgumentParser.
+    :rtype: argparse.ArgumentParser
+    """
 
     parser = \
         argparse.ArgumentParser(
@@ -300,6 +307,16 @@ default.settings.json
     )
 
     parser.add_argument(
+        '--version',
+        '-V',
+        action='version',
+        version=f'%(prog)s {__version__}',
+        help="""
+show version
+"""
+    )
+
+    parser.add_argument(
         'csv_fd',
         metavar='CSV_FILE',
         type=argparse.FileType('r'),
@@ -330,17 +347,29 @@ default.settings.json
 def configure_logging(
     level: int
 ) -> None:
-    'Configure logging.'
+    """
+    Configure logging.
+
+    :param int level: Level.
+
+    :return: Nothing.
+    :rtype: None
+    """
 
     logging.basicConfig(
         level=level
     )
 
 
-def main(
-    args: argparse.Namespace
-) -> None:
-    '``main`` entry point.'
+def main() -> None:
+    """
+    main().
+
+    :return: Nothing.
+    :rtype: None
+    """
+
+    args = get_parser().parse_args()
 
     logging_levels = \
         (
@@ -499,3 +528,9 @@ def main(
         )
 
         args.csv_fd.close()
+
+    sys.exit()
+
+
+if __name__ == '__main__':
+    main()
